@@ -8,6 +8,7 @@
 --   0    general list     → list (table) of Lua values (usually strings)
 --   -11  symbol atom      → string
 --   -7   long atom        → number
+--   101  generic null/::  → "::"  (e.g. `expr;` or `if[...]`)
 --   -128 error            → raises Lua error
 --
 -- Everything else raises "unsupported type N" so bugs are loud.
@@ -237,6 +238,13 @@ local function decode_long_atom(payload, pos, is_little_endian)
   return n, pos + 8
 end
 
+-- Decode a unary primitive / generic null (type 101).
+-- Wire format: a single byte after the type byte (0 = the generic null `::`).
+-- q returns this for trailing-semicolon statements like `expr;` and for `if[...]`.
+local function decode_unary(payload, pos)
+  return "::", pos + 1
+end
+
 -- Decode an error (-128): null-terminated string, raise as Lua error.
 local function decode_error(payload, pos)
   local start = pos
@@ -287,6 +295,8 @@ decode_value = function(payload, pos, is_little_endian)
     return decode_symbol_atom(payload, pos)
   elseif t == -7 then
     return decode_long_atom(payload, pos, is_little_endian)
+  elseif t == 101 then
+    return decode_unary(payload, pos)
   elseif t == -128 then
     decode_error(payload, pos)  -- raises, never returns
   else
