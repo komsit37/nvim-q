@@ -1,7 +1,8 @@
 -- nvim-q/output.lua
 -- Manage a dedicated scratch split buffer for q query results.
 -- Filetype: q_output  buftype: nofile  unlisted.
--- show(result, status) appends content (REPL scrollback).
+-- show(result) appends result content (REPL scrollback).
+-- status(str) echoes the connection/elapsed status to the message line.
 -- clear() wipes content.
 -- toggle() shows/hides the window.
 
@@ -164,11 +165,9 @@ local function format_result(result)
   end
 end
 
---- Show a query result in the output panel.
---- Appends a separator, a status header, and the result content.
---- @param result any     Decoded q value (string, table, number, …).
---- @param status string  Status line (elapsed time, connection name, etc.).
-function M.show(result, status)
+--- Show a query result in the output panel (result content only).
+--- @param result any  Decoded q value (string, table, number, …).
+function M.show(result)
   -- Ensure the output window is open.
   M.get_or_create_win()
 
@@ -182,20 +181,16 @@ function M.show(result, status)
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
   end
 
-  -- Build content lines.
-  local separator = string.rep("─", 60)
-  local result_lines = format_result(result)
+  append_lines(format_result(result))
+end
 
-  local all_lines = {}
-  table.insert(all_lines, separator)
-  if status and status ~= "" then
-    table.insert(all_lines, "-- " .. status)
+--- Echo the query status (connection + elapsed time) to the message line.
+--- @param status string  e.g. "local (localhost:5000)  2ms"
+function M.status(status)
+  if not status or status == "" then
+    return
   end
-  for _, l in ipairs(result_lines) do
-    table.insert(all_lines, l)
-  end
-
-  append_lines(all_lines)
+  vim.api.nvim_echo({ { "-- " .. status, "Comment" } }, false, {})
 end
 
 --- Clear all content from the output buffer.

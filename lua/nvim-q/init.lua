@@ -67,37 +67,53 @@ function M.setup(opts)
 
   local cfg = config.get()
   if cfg.keymaps ~= false then
-    -- <leader>qc — QConnect
-    vim.keymap.set("n", "<leader>qc", "<cmd>QConnect<CR>", {
-      desc    = "nvim-q: pick connection",
-      silent  = true,
-    })
+    local function send_line()
+      send.send(vim.api.nvim_get_current_buf(), "n")
+    end
 
-    -- <leader>q — send current line (normal mode)
-    vim.keymap.set("n", "<leader>q", function()
-      local bufnr = vim.api.nvim_get_current_buf()
-      send.send(bufnr, "n")
-    end, {
-      desc   = "nvim-q: send current line",
-      silent = true,
-    })
-
-    -- <CR> (visual mode) — send visual selection
-    vim.keymap.set("v", "<CR>", function()
+    local function send_visual()
       -- Leave visual mode first so '< and '> marks are set.
       vim.api.nvim_feedkeys(
         vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
         "x", false
       )
-      local bufnr = vim.api.nvim_get_current_buf()
-      send.send(bufnr, "v")
-    end, {
-      desc   = "nvim-q: send visual selection",
+      send.send(vim.api.nvim_get_current_buf(), "v")
+    end
+
+    -- <leader>kc — QConnect
+    vim.keymap.set("n", "<leader>kc", "<cmd>QConnect<CR>", {
+      desc   = "nvim-q: pick connection",
       silent = true,
     })
 
-    -- <leader>qo — toggle output panel
-    vim.keymap.set("n", "<leader>qo", "<cmd>QOutputToggle<CR>", {
+    -- <leader>ks — send current line (normal) / selection (visual)
+    vim.keymap.set("n", "<leader>ks", send_line, {
+      desc   = "nvim-q: send line",
+      silent = true,
+    })
+    vim.keymap.set("v", "<leader>ks", send_visual, {
+      desc   = "nvim-q: send selection",
+      silent = true,
+    })
+
+    -- <leader>kS — clear output panel, then send
+    vim.keymap.set("n", "<leader>kS", function()
+      output.clear()
+      send_line()
+    end, {
+      desc   = "nvim-q: clear output and send line",
+      silent = true,
+    })
+    vim.keymap.set("v", "<leader>kS", function()
+      output.clear()
+      send_visual()
+    end, {
+      desc   = "nvim-q: clear output and send selection",
+      silent = true,
+    })
+
+    -- <leader>ko — toggle output panel
+    vim.keymap.set("n", "<leader>ko", "<cmd>QOutputToggle<CR>", {
       desc   = "nvim-q: toggle output panel",
       silent = true,
     })

@@ -79,9 +79,10 @@ require("nvim-q").setup({
 
 | Command | Default key | Description |
 |---|---|---|
-| `:QConnect` | `<leader>qc` | Pick / switch connection (`vim.ui.select`) |
-| `:QSend` | `<leader>q` (normal) / `<CR>` (visual) | Send current line or visual selection |
-| `:QOutputToggle` | `<leader>qo` | Show / hide the output panel |
+| `:QConnect` | `<leader>kc` | Pick / switch connection (`vim.ui.select`) |
+| `:QSend` | `<leader>ks` (normal line / visual selection) | Send current line or visual selection |
+| — | `<leader>kS` | Clear the output panel, then send line / selection |
+| `:QOutputToggle` | `<leader>ko` | Show / hide the output panel |
 | `:QOutputClear` | — | Clear all content from the output panel |
 
 Set `keymaps = false` in `opts` to skip the defaults and bind your own.

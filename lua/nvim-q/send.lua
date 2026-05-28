@@ -144,7 +144,7 @@ function M._do_send(bufnr, wrapped, text, con)
       reason
     )
     vim.notify(msg, vim.log.levels.ERROR)
-    output.show(nil, "ERROR: " .. msg)
+    output.show("ERROR: " .. msg)
     -- Drop dead client so next attempt reconnects cleanly.
     connection.drop_client(con)
     return
@@ -173,11 +173,12 @@ function M._do_send(bufnr, wrapped, text, con)
     local display = string.format("nvim-q: %s", clean)
 
     vim.notify(display, vim.log.levels.ERROR)
-    output.show("ERROR: " .. clean, status_str)
+    output.show("ERROR: " .. clean)
     return
   end
 
-  output.show(result, status_str)
+  output.status(status_str)
+  output.show(result)
 end
 
 return M

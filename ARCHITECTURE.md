@@ -168,7 +168,7 @@ return {
       connections = {
         { name = "local", host = "localhost", port = 5000 },
       },
-      keymaps = true,              -- install default <leader>q etc.
+      keymaps = true,              -- install default <leader>k* maps
     },
     -- config = function(_, o) require("nvim-q").setup(o) end,  -- if opts default not used
   },
@@ -199,9 +199,10 @@ switch between local copy and the published GitHub version.
 
 | Command | Default key | Action |
 |---|---|---|
-| `:QConnect` | `<leader>qc` | pick/switch connection (`vim.ui.select`) |
-| `:QSend` | `<CR>` (visual) / `<leader>q` (line) | send selection/line, show in output panel |
-| `:QOutputToggle` | `<leader>qo` | show/hide output panel |
+| `:QConnect` | `<leader>kc` | pick/switch connection (`vim.ui.select`) |
+| `:QSend` | `<leader>ks` (line / visual selection) | send selection/line, show in output panel |
+| — | `<leader>kS` | clear output panel, then send |
+| `:QOutputToggle` | `<leader>ko` | show/hide output panel |
 
 `keymaps = false` in opts disables defaults so users can bind their own.
 
